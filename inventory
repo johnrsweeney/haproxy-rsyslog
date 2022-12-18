@@ -1,0 +1,6 @@
+[haproxy]
+18.130.39.84 ansible_user=centos ansible_ssh_private_key_file=/home/centos/sweeney_london.pem
+
+[backend-pool]
+3.9.29.241 ansible_user=centos ansible_ssh_private_key_file=/home/centos/sweeney_london.pem
+13.42.38.61 ansible_user=centos ansible_ssh_private_key_file=/home/centos/sweeney_london.pem

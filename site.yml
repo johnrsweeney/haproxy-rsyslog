@@ -1,0 +1,59 @@
+---
+- hosts: haproxy
+  become: true
+  gather_facts: false
+  tasks:
+  - name: install haproxy
+    package:
+      name: haproxy
+      state: installed
+  - name: configure haproxy
+    copy:
+      src: /home/centos/haproxy.cfg
+      dest: /etc/haproxy/haproxy.cfg
+    notify: restart_haproxy
+
+  - name: install rsyslog
+    package:
+      name: rsyslog
+      state: installed
+  - name: configure rsyslog
+    copy:
+      src: /home/centos/rsyslog.conf
+      dest: /etc/haproxy/rsyslog.conf
+    notify: restart_rsyslog
+
+  handlers:
+  - name: restart haproxy
+    systemd:
+      name: haproxy
+      state: restarted
+    listen: restart_haproxy
+  - name: restart rsyslog
+    systemd:
+      name: rsyslog
+      state: restarted
+    listen: restart_rsyslog
+
+- hosts: backend-pool
+  become: true
+  gather_facts: false
+  tasks:
+  - name: install httpd
+    package:
+      name: httpd
+      state: installed
+  - name: configure dummy index.html
+    lineinfile:
+      path: /var/www/html/index.html
+      create: true
+      line: 'Hello from {{ inventory_hostname }}'
+    notify: restart_httpd
+
+  handlers:
+  - name: restart httpd
+    systemd:
+      name: httpd
+      state: restarted
+    listen: restart_httpd
+
